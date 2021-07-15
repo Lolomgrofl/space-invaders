@@ -41,7 +41,22 @@ class Ship:
         self.cool_down_counter = 0
 
     def draw(self, window):
-        pygame.draw.rect(window, (255, 0, 0), (self.x, self.y, 50, 50))
+        window.blit(self.ship_img, (self.x, self.y))
+
+    def get_width(self):
+        return self.ship_img.get_width()
+
+    def get_height(self):
+        return self.ship_img.get_height()
+
+
+class Player(Ship):
+    def __init__(self, x, y, health=100):
+        super().__init__(x, y, health)
+        self.ship_img = PLAYER_SHIP
+        self.laser_img = YELLOW_LASER
+        self.mask = pygame.mask.from_surface(self.ship_img)
+        self.max_health = health
 
 
 # ---- MAIN LOOP
@@ -51,15 +66,16 @@ def main():
     FPS = 60
     level = 1
     lives = 5
-    ship = Ship(335, 650)
+    ship = Player(335, 650)
+    player_speed = 5
 
     main_font = pygame.font.SysFont("comicsans", size=50)
 
     clock = pygame.time.Clock()
 
-    def refresh_redraw_window():
+    def refresh_redraw_window():  # ---- rendering stuff on screen
         WIN.blit(BG, (0, 0))
-        # ---- drawing stuff
+        # ---- drawing
         lives_label = main_font.render(f'Lives: {lives}', True, (255, 255, 255))
         level_label = main_font.render(f'Level: {level}', True, (255, 255, 255))
         WIN.blit(lives_label, (10, 10))
@@ -73,10 +89,16 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-
+        # ---- SHIP MOVEMENT
         keys = pygame.key.get_pressed()  # dict of pressed keys
-        if keys[pygame.K_a]:  # moving left
-            ship.x -= 1
+        if keys[pygame.K_a] and ship.x - player_speed > 0:  # moving left
+            ship.x -= player_speed
+        if keys[pygame.K_d] and ship.x + player_speed + ship.get_width() < WIDTH:  # moving right
+            ship.x += player_speed
+        if keys[pygame.K_w] and ship.y - player_speed > 0:  # moving up
+            ship.y -= player_speed
+        if keys[pygame.K_s] and ship.y + player_speed + ship.get_height() < HEIGHT:  # moving down
+            ship.y += player_speed
 
 
 main()
