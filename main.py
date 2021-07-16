@@ -227,7 +227,7 @@ def main():
                 lives -= 1
                 enemies.remove(enemy)
 
-        player.move_lasers(laser_speed, enemies)
+        player.move_lasers(-laser_speed, enemies)
 
 
 main()
